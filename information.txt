@@ -1,0 +1,319 @@
+information of project 
+
+
+set up the backend 
+1 npm init for installing package.json file 
+2. install the file packages like
+        express - for server creation and routing operation
+        mongoose -for connecting DB and creating model schemas etc.
+        dotenv - for storing sensitive details
+        nodemon - for running the server and automatically restarting on changes
+        jsonwebtoken - for authentication; we create tokens using this
+        bcryptjs - for hashing the password from the user and store it on databases 
+        cookie-parser - used to parse cookies on the web
+        cloudinary - for storing images on Cloudinary
+        multer - for image uploading and operations on there own
+
+creating main file call server .js 
+
+        set up the main file 
+        export express from express 
+        const app =express()  what this mens express have  what ever the things that are method function and objects are all accessible by app()
+
+        we get the port from .env file which store the sensitive information only we call it environment variable 
+        we access the element by dotenv by importing 
+        and we config the file first by dotenv.config(); then we can use what ever the file variable we want 
+        we create server on port for listen it  
+
+        we access the variable by[ process.env .variable_name] 
+
+        (req,res)=>{
+    res.send("server is running") we call it controller 
+
+
+    file system in backend 
+        1.models
+        2.controller  use for contolling the actions 
+        3.routes use for route handling 
+        4.config/utils -use for small configuration 
+        5.middleware :  
+
+
+data bases connection with mongoDB
+        steps:1.go to mongodb atlas 
+        2.for new project - click on view project, then on new project 
+         project name 
+         then next 
+         then create 
+         
+         3. create cluster
+         4.then create deployment 
+         5.set username and password and the create it 
+         6.choose connection method
+
+         let say mongodb with vs 
+         then copy the url to connect and go to our .env file 
+         crate variable and store the url there
+         now add the databases name that we want to create by the name add it at the end or url after  / and add the valid  password of it
+          give permission to allow databases to access from any where for that set the ip to 0.0.0.0 for global in network
+
+
+          then create the  db.js in config /util folder 
+                create arrow function with async 
+                handel error thorough try catch method 
+                await is use for async 
+                use mongoose with its function call connect () in side it we store the string that we get from mongodb  access it from .env file (process.env.MONGODB_URL)
+                console db connected 
+                export it 
+
+                and then go to main file and call it inside the listen by using connectDb   which created in side db.js at config /util
+                coz when our server start listening quickly it connect to DB
+
+
+models :
+
+create user model file 
+we write the every thing in user model
+        import mongoose to create the schema throw it
+          creating  userSchema = new mongoose.Schema 
+          it contain two objects
+              {inside it we create schema
+              name:{
+                type :string
+                required :true
+              },
+              email:{
+                type:string
+                required :true
+                unique:true
+              },
+              password:{
+                type :staring
+                required :true
+              }
+               }, 
+              {we write here timestamp -we make it true }  
+
+      after this we create user model 
+      const user= mongoose.model("model-name",based on what (userSchema))   
+      export it    
+
+
+controller :
+
+
+setup the Authentication first on it 
+Auth.controller.js 
+write controller init  which we created 
+ first sign up with async function which handle req and res 
+        we have to sign up for that we get the (name,email,password) from req.body
+        then check this email user is exist or not if exist then tell them you can't sign-up with this again
+        for that we use userModel and check with (user.findOne ) to find user is exist in userModel or not 
+                if user is exist then return alrady exist or pass error  
+                
+
+                if password length is lass than or grater than predefined range 
+                 then return pass Error
+
+        then we process for sign up process 
+
+        password is never store directly in simple text from at databases 
+                it always stored hashed one fro that we use bcrypt method 
+                with await function 
+                 now bcrypt contaiane main two function hash and  
+
+                 hash - its function which create the hashed value or encrypted format of string (non understanding string ) 
+                 hash conteaine password and salt 
+                        salt: it  is number for creating strong password  complex password
+                const hashedPassword = await  bcrypt.hash (password,10) ;
+
+                then we create user
+                const user =await user.create ({
+                        name,password:hashedPassword,email
+                })  
+                user is created now generate token 
+                 this token is generating when user created and we store this token in our web at cookies due to this we are continues login to our web 
+
+                now we have to generate the token using token generater that we created function given below
+                using this 
+                we send user id which is generated by mongodb  (_id)
+                we create const token = await genToken(user._id)
+                now we pass this token to cookies 
+
+                res.cookie("cookie name ex('token')":token)
+
+
+
+
+        now we have to generate token in login sign up and many more things then for this we create function in our config/util file for small configuration
+                 we creating token.js in our config file then in it 
+                     we create genToken function its arrow function so make it async for this we have to take user id  and JWT secrate key which is from .env(its random secrate text) for generating token   
+                       for genrate token 
+                       jwt.sign() its function inside jwt \
+                       it contain userid and jwt secrate
+                       const token =await jwt.sign({signId},process.env.jwt secrate code name,{expire in "10d" }); 
+                       return token
+                       control the error using trycatch block
+
+                export the function with function name at last
+
+generate the token 
+
+
+
+
+middleware ::=>
+creating middleware  for current user details by using Authentication middleware
+
+creating isAuth.js  middleware file in middleware
+int that middleware find the token that generate is present in cookies so it find that token and extract user id  use jwt secrate key for verification and find the user who generate the token 
+it means token is in side the cookie means user is sign up and token is still there not expired means still login so we can show that users information 
+
+middleware  is in async function
+ it has 3 things (req,res,next){} coz it work in side two entity and after work it jump to next part 
+
+here request is came first in middleware and middleware perform operation and verify and then next to server 
+
+what we have to do  
+        1. try 
+        try block :
+        const token for store token that get from cookies 
+        accessing cookies by using req 
+        in which all that cookies are present in our browser and currently store 
+        from that cookies object we want token cookie
+                req.cookies.token
+                then chack that token is present or not 
+                if(!token ){
+                        return res.status(400).json(msg:"token doesn't found")        
+                }
+
+                if token found then 
+                find id 
+                for that we use jwt who generate this token so import jwt 
+
+                const verifyToken in this object is came after token retriving in which user id and all that thing are present 
+                for that await than 
+                jwt.verifyToken(token.,process.env.JWT_SECRET)
+                so we need to take out the user id from  the given verifyToken with help if  
+                req.userId = verifyToken.userId
+                next()
+
+        2.catch{
+                error handling
+        }
+
+-----------------------------------------
+        creating new user controller WHICH  give us current controller details 
+        we set the isAuth middleware in middle and get the user id and from that id and find user through it
+        import user from file location
+        try{
+        const userid =req.userid
+        const user = await  user.findById(userId).select("-password")
+
+        if(!user){
+           return res.status(400) .json(message:"user not found")    
+        }
+        return res.status(200).json(user);
+
+}catch(error){
+ console.log(err)
+}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**-----------------------------------------------Frontend----------------------------------------------------------------------------------------------------------**
+
+
+
+---------------------------------sign in ,sign up ---------------------------------------------------------------
+first download react-router-dom  for routing 
+react icon and axios for api featching
+
+now in main .jsx change the strictMode with browserRouter for route setup 
+import browserRouter
+use it instead of strictMode ok 
+<StrictMode> change to <BrowserRouter> end also
+<app/>
+</StrictMode>
+
+create pages in sec
+sign in ,sign up, 
+now in app.jsx :-create routing 
+           using     <Routes>
+                               <Route path="/ex" element={<sign-up/>}/>       
+                               .
+                               .
+                        <Routes/>
+
+
+sign up page ;
+
+creating ui which is written in sign up page 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Context Api : the context api is a mechanism that allows you to share specific information(like state or function) with multiple components eliminating overall code organization 
+
+the react  context api is a powerful tool for efficient state management ,offering a cleaner alternative to prop drilling and enhancing overall code organization 
+
+how context Api works 
+
+1.creating a context
+ the process begin by creating a context a context using the createContext()
+ method this serves as a blueprint for the shared data 
+  /creating a context 
+  Const MyContext = React.createContext();
+
+
+2.providing the Context 
+the context provider ,wrapped around components requiring access to shared data ,is established using the provider,
+
+function MyApp(){
+        return (
+                <MyContext.provider value ={/* your shared value*/}>
+                {// components taht can access the context value }
+                </MyContext.provider>
+        );
+
+}
+
+3.Consuming the context 
+        function AnotherComponent() {
+  const contextValue = React.useContext(MyContext);
+
+  // Now, contextValue contains the shared value
+}
+components  nested within the provider can consume thee shared data using the useContext hook or the consumer components
+
+
+----------------------------------new part in frontend -------------------------------------
+creating middleware  for current user details by using Authentication middleware(backend side) 
+ 
+creating customization page  for creating ai bu user for there avatar and page image accessing and showcasing
+
