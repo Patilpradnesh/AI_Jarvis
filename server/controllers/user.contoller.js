@@ -11,4 +11,4 @@ export const getCurrentUser=async(req,res)=>{
         }
 }
 
- 
+// this file give us current user details

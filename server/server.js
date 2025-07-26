@@ -16,10 +16,20 @@ app.use(cors({
 }))
 const port = process.env.POST|| 5000;
 
+// middleware to parse JSON bodies and cookies
+// this is used to parse the incoming request with JSON payloads
 app.use(express.json());
+// this is used to parse the cookies attached to the client request object
 app.use(cookieParser());
+
+// routes for authentication and user management
+// these routes are defined in the auth.routes.js and user.routes.js files
 app.use("/api/auth",authRouter);
-app.use("/api/user",userRouter);
+
+// this is used to handle user related routes
+// it is imported from user.routes.js file
+app.use("/api/user",userRouter); 
+
 
 
 // it is samll server actully which run on get method where perfoomr operation of req and res 

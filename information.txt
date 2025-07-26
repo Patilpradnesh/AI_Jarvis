@@ -191,9 +191,9 @@ what we have to do
                 find id 
                 for that we use jwt who generate this token so import jwt 
 
-                const verifyToken in this object is came after token retriving in which user id and all that thing are present 
+                const verifyToken in this object is came after token retrieving in which user id and all that thing are present 
                 for that await than 
-                jwt.verifyToken(token.,process.env.JWT_SECRET)
+                jwt.verifyToken(token,process.env.JWT_SECRET)
                 so we need to take out the user id from  the given verifyToken with help if  
                 req.userId = verifyToken.userId
                 next()
@@ -218,8 +218,51 @@ what we have to do
 }catch(error){
  console.log(err)
 }  
+after that adding in index file the middleware route 
 
 
+image uploading on cloudinary 
+1. send image from frontend 
+2.create Malter middleware : which use to send the image in request .file 
+3.it store in our public folder which we create random
+4.then when ever we call the uploadOnCloudinary  we permanently upload our image
+then we get url and we have to store it in our database 
+
+
+after uploading image from public storage to  final cloudinary then we delete that image from local storage 
+
+for that we use Fs module for deleting file  import fs from fs module
+ans use the fs.unlinkSync () which use to delete the path sync
+like thos fs.unlinkSync(file path) it delete the pic from that stage 
+same as deleting tha file after getting error otherwise local file storage get fulled 
+
+now we creating multer middleware 
+
+what is does it get the image from frontend  and send it to public folder
+
+in that folder first import multer then
+ create const storage variable which perform operation to store that images 
+ it use
+ 
+ 
+ multer.diskStorage ({ // function which contain operators like 
+
+  this arrow function work for file uploading on destination where it use req,file which we want to uplode and cb -callabck function
+destination(req,file,cb)=>{
+
+ in side it we store the file in public folder of backend and provide path to them
+ using callback function 
+ cb(null,"./public /image")
+}
+// we can deside file name also 
+filename:(req,file,cb)=>{
+        cd(null,file.originalname)
+}
+
+ })
+
+ we can tore this all in on variable to use it 
+ const upload =multer({storage});
 
 
 
