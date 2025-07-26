@@ -360,3 +360,8 @@ creating middleware  for current user details by using Authentication middleware
  
 creating customization page  for creating ai bu user for there avatar and page image accessing and showcasing
 
+now we access the api from backend to frontend side 
+
+we are fetch the current user api that we create into frontend side 
+
+we are fetching it in user-context-api folder  of frontend 

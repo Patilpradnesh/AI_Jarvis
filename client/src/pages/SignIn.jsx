@@ -10,7 +10,7 @@ import UserContext from "../contextApi/userContext"
 function  SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const Navigate = useNavigate();
-  const { serverUrl } = useContext(userDataContext); 
+  const { serverUrl ,userData,setUserData } = useContext(userDataContext); 
   const [Loading,setLoading]=useState(false);
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
@@ -29,7 +29,8 @@ const handelSignIn =async(e)=>{
      email,password,
     },{withCredentials:true})  // withCredentials is used to pass the token in cookies ease
 
-    console.log(result.data)
+    setUserData(result.data)
+    console.log("signIn success");
     if(result.status){
       alert("Sign In successful")
       Navigate("/")
@@ -37,6 +38,7 @@ const handelSignIn =async(e)=>{
      setLoading(false)
   } catch (error) {
     setLoading(false)
+    setUserData(null);
    console.log("Full error response:", error.response);
   console.log("Error data:", error.response?.data);
   setErr(error.response?.data?.message || "Login failed");

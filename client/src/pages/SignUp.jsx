@@ -3,15 +3,15 @@ import bg from "../assets/back.jpg";
 import { LuEyeClosed } from "react-icons/lu";
 import { BsEyeFill } from "react-icons/bs";
 import { Navigate, useNavigate } from "react-router-dom";
-import { userDataContext } from "../contextApi/userContext";
+import { userDataContext ,userContext} from "./contextApi/userContext";
 import axios from "axios";
 
-import UserContext from "../contextApi/userContext"
+
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const Navigate = useNavigate();
-  const { serverUrl } = useContext(userDataContext); 
+  const { serverUrl,userData,setUserData } = useContext(userDataContext); 
   const [name,setName] =useState("");
   const [Loading,setLoading]=useState(false);
   const [email,setEmail]=useState("");
@@ -29,7 +29,7 @@ const handelSignup =async(e)=>{
       name,email,password,
     },{withCredentials:true})  // withCredentials is used to pass the token in cookies ease
 
-    console.log(result.data)
+    setUserData(result.data)
     console.log("signUp success")
 
 
@@ -40,6 +40,7 @@ const handelSignup =async(e)=>{
     setLoading(false)
   } catch (error) {
     setLoading(false)
+    setUserData(null);
     console.log("Error aya bhai",error)
     setErr(error.response.data.message)
   }
