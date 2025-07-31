@@ -3,9 +3,9 @@ import bg from "../assets/back.jpg";
 import { LuEyeClosed } from "react-icons/lu";
 import { BsEyeFill } from "react-icons/bs";
 import { Navigate, useNavigate } from "react-router-dom";
-import { userDataContext } from "../contextApi/userContext";
+import { userDataContext,userContext } from "../contextApi/UserContext";
 import axios from "axios";
-import UserContext from "../contextApi/userContext"
+
 
 function  SignIn() {
   const [showPassword, setShowPassword] = useState(false);
